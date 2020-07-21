@@ -205,6 +205,20 @@ func NewGaugeFunc(opts prometheus.GaugeOpts, function func() float64) prometheus
 	return With(prometheus.DefaultRegisterer).NewGaugeFunc(opts, function)
 }
 
+// NewGaugeWithTimestamp works like the function of the same name in the prometheus package
+// but it automatically registers the GaugeWithTimestamp with the
+// prometheus.DefaultRegisterer. If the registration fails, NewGaugeWithTimestamp panics.
+func NewGaugeWithTimestamp(opts prometheus.GaugeOpts) prometheus.GaugeWithTimestamp {
+	return With(prometheus.DefaultRegisterer).NewGaugeWithTimestamp(opts)
+}
+
+// NewGaugeWithTimestampVec works like the function of the same name in the prometheus
+// package but it automatically registers the GaugeVec with the
+// prometheus.DefaultRegisterer. If the registration fails, NewGaugeWithTimestampVec panics.
+func NewGaugeWithTimestampVec(opts prometheus.GaugeOpts, labelNames []string) *prometheus.GaugeWithTimestampVec {
+	return With(prometheus.DefaultRegisterer).NewGaugeWithTimestampVec(opts, labelNames)
+}
+
 // NewSummary works like the function of the same name in the prometheus package
 // but it automatically registers the Summary with the
 // prometheus.DefaultRegisterer. If the registration fails, NewSummary panics.
@@ -315,6 +329,27 @@ func (f Factory) NewGaugeVec(opts prometheus.GaugeOpts, labelNames []string) *pr
 // Registerer.
 func (f Factory) NewGaugeFunc(opts prometheus.GaugeOpts, function func() float64) prometheus.GaugeFunc {
 	g := prometheus.NewGaugeFunc(opts, function)
+	if f.r != nil {
+		f.r.MustRegister(g)
+	}
+	return g
+}
+
+// NewGaugeWithTimestamp works like the function of the same name in the prometheus package
+// but it automatically registers the GaugeWithTimestamp with the Factory's Registerer.
+func (f Factory) NewGaugeWithTimestamp(opts prometheus.GaugeOpts) prometheus.GaugeWithTimestamp {
+	g := prometheus.NewGaugeWithTimestamp(opts)
+	if f.r != nil {
+		f.r.MustRegister(g)
+	}
+	return g
+}
+
+// NewGaugeWithTimestampVec works like the function of the same name in the prometheus
+// package but it automatically registers the GaugeWithTimestampVec with the Factory's
+// Registerer.
+func (f Factory) NewGaugeWithTimestampVec(opts prometheus.GaugeOpts, labelNames []string) *prometheus.GaugeWithTimestampVec {
+	g := prometheus.NewGaugeWithTimestampVec(opts, labelNames)
 	if f.r != nil {
 		f.r.MustRegister(g)
 	}
