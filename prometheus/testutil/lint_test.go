@@ -16,7 +16,7 @@ package testutil
 import (
 	"testing"
 
-	"github.com/prometheus/client_golang/prometheus"
+	"github.com/nefeli/prometheus_client_golang/prometheus"
 )
 
 func TestCollectAndLintGood(t *testing.T) {
